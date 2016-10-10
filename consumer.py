@@ -13,10 +13,10 @@ kafka_server="kafka"
 kafka_port=9092
 
 # temp
-mongo_port=30670
-kafka_port=30235
+#mongo_port=30670
+#kafka_port=30235
 
-print "#### Starting kafka-mongodb-debezium-demo ####"
+print("#### Starting kafka-mongodb-debezium-demo ####")
 
 kafka_url=kafka_server+":"+ str(kafka_port)
 

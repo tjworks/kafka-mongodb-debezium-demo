@@ -1,4 +1,4 @@
-from python:alpine
+from python:2.7-alpine
 
 USER root
 RUN pip install kafka-python
