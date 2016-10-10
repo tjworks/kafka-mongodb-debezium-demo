@@ -13,8 +13,8 @@ kafka_server="kafka"
 kafka_port=9092
 
 # temp
-#mongo_port=30670
-#kafka_port=30235
+mongo_port=30670
+kafka_port=30235
 
 print "#### Starting kafka-mongodb-debezium-demo ####"
 
@@ -31,7 +31,8 @@ class Consumer(threading.Thread):
         consumer = KafkaConsumer(bootstrap_servers= kafka_url,
                                  auto_offset_reset='earliest')
         consumer.subscribe(['dbserver1.inventory.customers', 
-            'dbserver1.inventory.orders', 'dbserver1.inventory.products'])
+            'dbserver1.inventory.orders', 'dbserver1.inventory.products',
+            'dbserver1.inventory.products_on_hand'])
 
         for message in consumer:
             print "\n############### RAW MSG #################\n"
@@ -55,10 +56,13 @@ class Consumer(threading.Thread):
 
             if doc["value"]["payload"] and doc["value"]["payload"]["after"]:
                 v = doc["value"]["payload"]["after"]
-                if(v["id"]):
-                    result = coll.find_one_and_replace({"id": v["id"] }, v, upsert=True)
-                if(v["order_number"]):
-                    result = coll.find_one_and_replace({"order_number": v["order_number"] }, v, upsert=True)
+
+                pk="id"
+                if tname == "orders":
+                    pk="order_number"
+                elif tname == "products_on_hand":
+                    pk="product_id"                
+                result = coll.find_one_and_replace({pk: v[pk] }, v, upsert=True)                
                 if result: 
                     print "Updated record: ",result
 
